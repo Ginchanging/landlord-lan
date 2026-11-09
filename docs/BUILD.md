@@ -60,3 +60,9 @@ flutter test test/ui_test.dart --dart-define=CAPTURE_SCREENSHOTS=true
 ```
 
 第二条命令更新 `docs/screenshots/` 中的组件渲染截图。测试中的自动出牌只用于验证规则，不是产品里的电脑玩家。
+
+## GitHub Release
+
+推送 `v*` 标签会运行 Android 测试与 APK 构建、macOS 上的 iOS 无签名编译。全部通过后，发布任务使用本仓库的临时 `GITHUB_TOKEN` 上传 APK、源码、校验值和构建记录，发布为测试版本。发布说明来自 `docs/RELEASE_NOTES.md`。
+
+该流程不需要把个人访问令牌或签名密钥存入仓库；日常推送 `main` 只执行构建检查。

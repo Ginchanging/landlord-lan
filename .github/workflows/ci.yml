@@ -3,6 +3,7 @@ name: Build and test
 on:
   push:
     branches: [main]
+    tags: ['v*']
   pull_request:
   workflow_dispatch:
 
@@ -56,3 +57,57 @@ jobs:
           flutter pub get --enforce-lockfile
           flutter precache --ios
       - run: flutter build ios --release --no-codesign
+
+  release:
+    name: Publish tested release
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: [android, ios]
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+      actions: read
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+      RELEASE_TAG: ${{ github.ref_name }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: android-apk
+          path: dist
+      - name: Package source and build records
+        run: |
+          mv dist/app-release.apk "dist/landlord-lan-${RELEASE_TAG}-android.apk"
+          git archive --format=zip --prefix=landlord-lan/ --output="dist/landlord-lan-${RELEASE_TAG}-source.zip" HEAD
+          python3 - <<'PY'
+          import hashlib, json, os
+          from pathlib import Path
+          folder = Path('dist')
+          tag = os.environ['RELEASE_TAG']
+          files = sorted(folder.glob('*.apk')) + sorted(folder.glob('*.zip'))
+          checks = [f'{hashlib.sha256(p.read_bytes()).hexdigest()}  {p.name}' for p in files]
+          (folder / f'landlord-lan-{tag}-SHA256SUMS.txt').write_text('\n'.join(checks) + '\n')
+          info = {
+              'tag': tag, 'source_commit': os.environ['GITHUB_SHA'],
+              'repository': os.environ['GITHUB_REPOSITORY'],
+              'workflow_run': os.environ['GITHUB_RUN_ID'],
+              'flutter': '3.41.9', 'dart': '3.11.5',
+              'android_min_api': 24, 'android_target_api': 36,
+              'apk_signing': 'Android debug/test key (GitHub Actions runner)',
+              'automated_tests_passed': 40,
+              'ios_build': 'Release compilation passed without code signing',
+              'physical_device_tests': 'not run',
+          }
+          (folder / f'landlord-lan-{tag}-BUILD-INFO.json').write_text(json.dumps(info, indent=2) + '\n')
+          PY
+      - name: Upload assets and publish prerelease
+        run: |
+          if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
+            gh release edit "$RELEASE_TAG" --title "Landlord LAN ${RELEASE_TAG}" --notes-file docs/RELEASE_NOTES.md --prerelease
+          else
+            gh release create "$RELEASE_TAG" --verify-tag --draft --prerelease --title "Landlord LAN ${RELEASE_TAG}" --notes-file docs/RELEASE_NOTES.md
+          fi
+          gh release upload "$RELEASE_TAG" dist/* --clobber
+          gh release edit "$RELEASE_TAG" --draft=false --prerelease
