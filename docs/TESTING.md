@@ -1,6 +1,6 @@
 # 验证记录与真机验收
 
-本地验证日期：2026-11-09。`flutter analyze` 无问题，**40 项测试全部通过**；Android Release APK 构建成功，APK v2 签名及 16 KB 页对齐检查通过。未运行 iOS 编译或双端真机联测。GitHub 仓库首次创建被当前连接以 403 拒绝，尚未触发远程 CI。
+本地验证日期：2026-11-09。`flutter analyze` 无问题，**40 项测试全部通过**；Android Release APK 构建成功，APK v2 签名及 16 KB 页对齐检查通过。双端真机联测尚未进行。iOS 编译由本仓库的 macOS GitHub Actions 执行，结果见 Actions。
 
 ## 自动化覆盖
 

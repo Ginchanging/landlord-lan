@@ -1,4 +1,4 @@
-# 同桌 · 局域网斗地主
+# Landlord LAN · 同桌斗地主
 
 三部手机，一张牌桌。**iOS / Android 共用 Flutter 项目，通过同一 Wi-Fi 或热点联机，游戏不需要互联网。**
 
@@ -7,7 +7,7 @@
 
 ## 下载安装
 
-- [下载 Android APK](https://github.com/Ginchanging/lan-doudizhu/releases/latest)：Android 7.0 / API 24 及以上，包含 ARM32、ARM64、x86_64。
+- [下载 Android APK](https://github.com/Ginchanging/landlord-lan/releases/tag/v0.1.0)：Android 7.0 / API 24 及以上，包含 ARM32、ARM64、x86_64。
 - iPhone / iPad：最低 iOS 14，源码位于 `ios/`。需要 Mac + Xcode 签名安装，见 [iOS 构建说明](docs/BUILD.md#ios)。没有提供已签名 IPA 或 TestFlight 分发。
 - APK 是用于侧载试玩的 **Release 构建、调试密钥签名**。安装包及 SHA-256 校验值放在 GitHub Release，密钥不进入仓库。不同构建机器的调试签名可能不同，更新失败时需要先卸载旧测试版。
 
