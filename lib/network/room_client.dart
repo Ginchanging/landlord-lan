@@ -284,13 +284,25 @@ class RoomClient extends ChangeNotifier {
     _stopped = true;
     _timer?.cancel();
     final socket = _socket;
-    if (socket != null && socket.readyState == WebSocket.open) {
-      socket.add(jsonEncode({'type': 'leave'}));
-      await socket.close();
-    }
+    final wasConnected = connected;
     _socket = null;
     connected = false;
     _failPending('你已离开房间');
+    if (socket == null) return;
+    // A peer can close the sink before readyState reflects it, especially on
+    // Windows. Cleanup must never replace the original join rejection.
+    try {
+      if (wasConnected && socket.readyState == WebSocket.open) {
+        socket.add(jsonEncode({'type': 'leave'}));
+      }
+    } catch (_) {
+      /* The peer has already disconnected. */
+    }
+    try {
+      await socket.close();
+    } catch (_) {
+      /* Closing is best effort and idempotent. */
+    }
   }
 
   @override

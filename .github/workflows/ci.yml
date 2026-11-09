@@ -132,7 +132,7 @@ jobs:
               'flutter': '3.41.9', 'dart': '3.11.5',
               'android_min_api': 24, 'android_target_api': 36,
               'apk_signing': 'Android debug/test key (GitHub Actions runner)',
-              'automated_tests_passed': 42,
+              'automated_tests_passed': 43,
               'ios_build': 'Release compilation passed without code signing',
               'windows_build': 'x64 Release built, portable ZIP launched and exited normally',
               'windows_min_version': 'Windows 10 1903 / build 18362',

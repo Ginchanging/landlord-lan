@@ -160,6 +160,27 @@ void main() {
       expect(host.game.seats.fold<int>(0, (sum, p) => sum + p!.score), 0);
     },
   );
+
+  test(
+    'rejected joins retain their server error while the socket is closing',
+    () async {
+      await three();
+      for (var attempt = 0; attempt < 10; attempt++) {
+        await expectLater(
+          RoomClient.connect(uri(), '满员测试'),
+          throwsA(
+            isA<GameException>().having(
+              (error) => error.message,
+              'message',
+              contains('房间已满'),
+            ),
+          ),
+        );
+      }
+      expect(host.game.seats.whereType<PlayerSeat>().length, 3);
+      expect(clients.every((client) => client.connected), isTrue);
+    },
+  );
   test(
     'stale, duplicate and malformed commands cannot advance a game twice',
     () async {

@@ -7,7 +7,7 @@ Landlord LAN v0.2.0：新增 Windows 电脑端，可与 iPhone、Android 通过�
 - 手机端保留经典绿色横屏界面、三人真人对局、合法出牌提示与积分结算。
 - 断线暂停、座位保留 60 秒和重连流程适用于所有平台。
 - iOS 最低版本统一为 15，已修复 Xcode 27 对 Runner / Flutter / Pods 部署目标版本的要求。
-- 静态检查、42 项自动化测试、Android 构建、iOS 无签名编译、Windows 构建和免安装包启动检查通过后才发布。
+- 静态检查、43 项自动化测试、Android 构建、iOS 无签名编译、Windows 构建和免安装包启动检查通过后才发布。
 - Windows 启动检查验证实际 EXE 的窗口、原生 DLL、缩放与正常退出；跨设备 Wi-Fi / 热点联机尚未实测。
 
 下载：

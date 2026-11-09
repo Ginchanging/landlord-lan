@@ -2,7 +2,7 @@
 
 本地验证日期：2026-11-09。`flutter analyze` 无问题，**40 项原有测试已通过**；Android Release APK 构建成功，APK v2 签名及 16 KB 页对齐检查通过。双端真机联测尚未进行。iOS 编译由本仓库的 macOS GitHub Actions 执行，结果见 Actions。
 
-Windows 扩展新增 2 项桌面测试，总计 42 项；验证结果与 Windows 构建 / 启动记录以对应版本的 Actions 和 Release 为准。
+Windows 扩展新增 2 项桌面测试和 1 项连接关闭回归测试，总计 43 项；验证结果与 Windows 构建 / 启动记录以对应版本的 Actions 和 Release 为准。
 
 ## 自动化覆盖
 
