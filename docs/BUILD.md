@@ -34,7 +34,7 @@ flutter run --release
 
 ## iOS
 
-需要 Mac、受 Flutter 3.41.9 支持的 Xcode、iOS SDK、CocoaPods。Linux 无法编译或签名 iOS 应用。
+需要 Mac、受 Flutter 3.41.9 支持的 Xcode、iOS SDK、CocoaPods。当前最低 iOS 版本为 15.0，Runner、App framework 与所有 Pods 的最低版本已统一，兼容 Xcode 27 的部署目标要求。Linux 无法编译或签名 iOS 应用。
 
 ```sh
 flutter pub get
@@ -45,10 +45,31 @@ open ios/Runner.xcworkspace
 
 在 Xcode 中：
 
-1. 选择 **Runner → Signing & Capabilities**，选择 Apple Team，启用自动签名。
-2. 若 Bundle Identifier 被占用，将 `io.github.ginchanging.lanDoudizhu` 改为自己唯一的标识。
-3. 接上已信任的 iPhone / iPad，选中设备运行。个人免费 Apple ID 的设备数、有效期与开发者模式限制遵循 Apple 当前规则。
-4. 首次运行允许 **本地网络**，后续可在系统设置中修改。
+1. 在 **Xcode → Settings → Accounts** 登录自己的 Apple ID。
+2. 点左侧蓝色 **Runner** 工程，在 **TARGETS** 中选择 **Runner → Signing & Capabilities**，勾选 **Automatically manage signing**，**Team** 选择自己的账号（个人测试可选 Personal Team）。团队和证书属于本机签名设置，仓库不提供预设团队。
+3. 若 Bundle Identifier 被占用，将 `io.github.ginchanging.lanDoudizhu` 改为自己唯一的英文标识，例如 `com.yourname.landlordlan`。
+4. 接上已信任并解锁的 iPhone / iPad，在顶部 **Runner** 右侧选择真实设备。iOS 16 及以上按提示启用开发者模式；如果出现开发者磁盘映像错误，先更新兼容手机系统的 Xcode 并完成设备支持组件安装。
+5. 选择 **Product → Scheme → Edit Scheme → Run → Info → Build Configuration → Release**，按 **⌘R** 签名安装。Release 模式支持断开电脑后独立启动。
+6. 首次运行允许 **本地网络**，后续可在系统设置中修改。个人免费 Apple ID 的设备数、有效期与开发者模式限制遵循 Apple 当前规则。
+
+### Xcode 27 提示最低版本过低
+
+如果看到 Runner / nsd_ios / Pods-Runner / Flutter 的 `IPHONEOS_DEPLOYMENT_TARGET` 为 13.0 或 14.0，而 Xcode 要求 15.0，请先关闭 Xcode，在项目根目录更新并重新生成 Pods：
+
+```sh
+git pull --ff-only
+flutter clean
+flutter pub get
+flutter precache --ios
+cd ios
+pod install
+cd ..
+open ios/Runner.xcworkspace
+```
+
+`v0.1.0` 源码归档保留了旧配置，修复位于最新 `main`。若 `git pull` 提示本地修改冲突，请保留自己的 Team / Bundle Identifier 设置并解决冲突，不要强制重置工程文件。
+
+若仍提示 **Signing for Runner requires a development team**，按上述第 1～2 步选择本人的 Team；无签名编译检查通过，并不代表已经具备手机安装签名。
 
 TestFlight / App Store 需要 Apple Developer 会员、分发签名和 App Store Connect 配置，本次不包含这些账号操作。CI 的 `--no-codesign` 仅验证编译，不生成可直接安装的签名 IPA。
 

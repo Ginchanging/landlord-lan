@@ -1,4 +1,4 @@
-platform :ios, '14.0'
+platform :ios, '15.0'
 ENV['COCOAPODS_DISABLE_STATS'] = 'true'
 project 'Runner', { 'Debug' => :debug, 'Profile' => :release, 'Release' => :release }
 def flutter_root
@@ -22,5 +22,12 @@ end
 post_install do |installer|
   installer.pods_project.targets.each do |target|
     flutter_additional_ios_build_settings(target)
+    # Xcode 27 requires iOS 15+. Flutter and plugin podspecs can still
+    # generate older deployment targets, so apply the floor after the helper.
+    target.build_configurations.each do |config|
+      if config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'].to_s.to_f < 15.0
+        config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '15.0'
+      end
+    end
   end
 end
