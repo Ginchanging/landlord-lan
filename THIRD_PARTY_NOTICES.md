@@ -6,3 +6,5 @@
 - Material Icons：Apache License 2.0，随 Flutter SDK 提供。
 
 传递依赖以 `pubspec.lock` 为准，许可证随依赖发布。扑克牌、布局和图标素材由项目代码绘制。
+
+Windows 免安装包附带 Microsoft Visual C++ x64 运行库，遵循 Microsoft 的[运行库再分发条款](https://learn.microsoft.com/cpp/windows/redistributing-visual-cpp-files)。

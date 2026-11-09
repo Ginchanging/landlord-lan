@@ -1,7 +1,7 @@
 name: lan_doudizhu
 description: 三位真人通过 Wi-Fi 或热点离线联机的跨平台斗地主。
 publish_to: none
-version: 0.1.0+1
+version: 0.2.0+2
 environment:
   sdk: '>=3.11.0 <4.0.0'
 dependencies:

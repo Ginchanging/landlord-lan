@@ -32,6 +32,26 @@ flutter run --release
 
 首版使用本机构建工具生成的调试签名供侧载测试，正式分发需要配置私有签名。跨机器构建的 APK 可能不能覆盖安装，卸载旧测试版后重装即可。密钥、`key.properties` 和本机 SDK 路径已忽略。
 
+## Windows
+
+使用 Windows 10 1903（build 18362）或更高 / Windows 11，x64 架构。普通玩家下载 Release 中的 `landlord-lan-v0.2.0-windows-x64.zip`，完整解压后运行 `LandlordLAN.exe`，不需要安装 Flutter 或 Visual Studio。
+
+在自己可信的家庭网络中，将 Windows 网络配置文件设为“专用”，首次防火墙询问时允许 Landlord LAN 使用专用网络。电脑与手机接入同一局域网，创建 / 搜索牌桌，或输入房主显示的 IP:端口。不要只复制 EXE，旁边的 DLL 和 `data` 都是运行所需的文件。
+
+开发者需安装 Visual Studio 2022 的 **使用 C++ 的桌面开发**工作负载，包括 MSVC、Windows SDK 和 CMake。然后执行：
+
+```sh
+flutter config --enable-windows-desktop
+flutter pub get
+flutter test --reporter expanded
+flutter run -d windows
+flutter build windows --release
+```
+
+输出目录为 `build/windows/x64/runner/Release/`。CI 打包时加入可应用本地部署的 Microsoft Visual C++ x64 运行库，压缩完整 Release 目录，并启动解压后的 ZIP 检查窗口显示、原生模块加载、缩放与正常退出。截图和启动日志保存在 `windows-smoke` Actions artifact。
+
+Windows 与 v0.1.0 手机端使用相同的 v1 联机协议。窗口失焦 / 最小化不会主动断线；电脑睡眠、关闭进程会中断连接。混合设备的实际 Wi-Fi / 热点行为仍需在自己的网络中验证。
+
 ## iOS
 
 需要 Mac、受 Flutter 3.41.9 支持的 Xcode、iOS SDK、CocoaPods。当前最低 iOS 版本为 15.0，Runner、App framework 与所有 Pods 的最低版本已统一，兼容 Xcode 27 的部署目标要求。Linux 无法编译或签名 iOS 应用。
@@ -84,6 +104,6 @@ flutter test test/ui_test.dart --dart-define=CAPTURE_SCREENSHOTS=true
 
 ## GitHub Release
 
-推送 `v*` 标签会运行 Android 测试与 APK 构建、macOS 上的 iOS 无签名编译。全部通过后，发布任务使用本仓库的临时 `GITHUB_TOKEN` 上传 APK、源码、校验值和构建记录，发布为测试版本。发布说明来自 `docs/RELEASE_NOTES.md`。
+推送 `v*` 标签会运行 Android 测试与 APK 构建、macOS 上的 iOS 无签名编译，以及 Windows 测试、x64 构建和免安装包启动检查。全部通过后，发布任务使用本仓库的临时 `GITHUB_TOKEN` 上传 APK、Windows ZIP、源码、校验值和构建记录，发布为测试版本。发布说明来自 `docs/RELEASE_NOTES.md`。
 
 该流程不需要把个人访问令牌或签名密钥存入仓库；日常推送 `main` 只执行构建检查。

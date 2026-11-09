@@ -177,4 +177,112 @@ void main() {
     expect(tester.takeException(), isNull);
     await capture(tester, 'reconnect');
   });
+
+  testWidgets(
+    'Windows home supports resizing, keyboard entry, and mouse clicks',
+    (tester) async {
+      final name = TextEditingController(text: '电脑牌友');
+      final address = TextEditingController();
+      final discovery = RoomDiscovery();
+      var created = false;
+      NearbyRoom? joined;
+      discovery.rooms = [const NearbyRoom('朋友的牌桌', '192.168.1.8', 39001)];
+      Widget home() => HomeScreen(
+        name: name,
+        address: address,
+        discovery: discovery,
+        busy: false,
+        onCreate: () => created = true,
+        onJoin: ([room]) => joined = room,
+      );
+      for (final size in [
+        const Size(640, 360),
+        const Size(1100, 680),
+        const Size(1440, 900),
+      ]) {
+        await show(tester, home(), size);
+        expect(tester.takeException(), isNull);
+      }
+      await tester.enterText(find.byType(TextField).first, 'Windows牌友');
+      expect(name.text, 'Windows牌友');
+      final mouse = await tester.createGesture(
+        kind: ui.PointerDeviceKind.mouse,
+      );
+      await mouse.addPointer();
+      await mouse.moveTo(tester.getCenter(find.text('创建牌桌')));
+      await mouse.down(tester.getCenter(find.text('创建牌桌')));
+      await mouse.up();
+      expect(created, isTrue);
+      await mouse.down(tester.getCenter(find.text('朋友的牌桌')));
+      await mouse.up();
+      expect(joined?.address, '192.168.1.8');
+      await mouse.removePointer();
+      await show(tester, home(), const Size(1100, 680));
+      await capture(tester, 'windows-home');
+      await tester.pumpWidget(const SizedBox());
+      name.dispose();
+      address.dispose();
+      discovery.dispose();
+    },
+    variant: TargetPlatformVariant.only(TargetPlatform.windows),
+  );
+
+  testWidgets(
+    'Windows 20-card table supports a mouse-selected legal play',
+    (tester) async {
+      final state = gameState();
+      final hand = (state['hand'] as List).cast<int>();
+      final selected = <int>{};
+      String? sentAction;
+      Map<String, Object?>? sentData;
+      Widget table() => StatefulBuilder(
+        builder: (context, update) => TableScreen(
+          state: state,
+          connected: true,
+          fatalError: null,
+          secondsLeft: 0,
+          busy: false,
+          selected: selected,
+          onSelect: (id) => update(() {
+            if (!selected.add(id)) selected.remove(id);
+          }),
+          onAction: (action, [data = const {}]) {
+            sentAction = action;
+            sentData = data;
+          },
+          onHint: () {},
+          onClear: () {},
+          onExit: () {},
+          onHome: () {},
+          onConnection: () {},
+        ),
+      );
+      for (final size in [
+        const Size(640, 360),
+        const Size(1100, 680),
+        const Size(1440, 900),
+      ]) {
+        await show(tester, table(), size);
+        expect(tester.takeException(), isNull);
+      }
+      final mouse = await tester.createGesture(
+        kind: ui.PointerDeviceKind.mouse,
+      );
+      await mouse.addPointer();
+      final card = tester.getTopLeft(find.byKey(ValueKey(hand.first)));
+      await mouse.down(card + const Offset(8, 32));
+      await mouse.up();
+      await tester.pumpAndSettle();
+      expect(selected, {hand.first});
+      final button = find.text('出牌 · 单张');
+      await mouse.down(tester.getCenter(button));
+      await mouse.up();
+      expect(sentAction, 'play');
+      expect(sentData?['cards'], [hand.first]);
+      await mouse.removePointer();
+      await show(tester, table(), const Size(1100, 680));
+      await capture(tester, 'windows-table');
+    },
+    variant: TargetPlatformVariant.only(TargetPlatform.windows),
+  );
 }

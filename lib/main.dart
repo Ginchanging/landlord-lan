@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -11,11 +12,13 @@ import 'ui/screens.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await SystemChrome.setPreferredOrientations([
-    DeviceOrientation.landscapeLeft,
-    DeviceOrientation.landscapeRight,
-  ]);
-  await SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+  if (Platform.isAndroid || Platform.isIOS) {
+    await SystemChrome.setPreferredOrientations([
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.landscapeRight,
+    ]);
+    await SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+  }
   runApp(const DoudizhuApp());
 }
 
@@ -23,7 +26,7 @@ class DoudizhuApp extends StatelessWidget {
   const DoudizhuApp({super.key});
   @override
   Widget build(BuildContext context) => MaterialApp(
-    title: '局域网斗地主',
+    title: Platform.isWindows ? 'Landlord LAN' : '局域网斗地主',
     debugShowCheckedModeBanner: false,
     locale: const Locale('zh', 'CN'),
     supportedLocales: const [Locale('zh', 'CN')],
@@ -271,9 +274,11 @@ class _GameAppState extends State<GameApp> with WidgetsBindingObserver {
                     ],
                   ),
                 const SizedBox(height: 12),
-                const Text(
-                  '若搜索不到：允许 App 访问本地网络，并检查路由器是否开启了访客隔离。',
-                  style: TextStyle(color: muted, fontSize: 12),
+                Text(
+                  Platform.isWindows
+                      ? '若连接失败：请在 Windows 防火墙中允许 Landlord LAN 访问专用网络，并检查路由器的访客隔离。'
+                      : '若搜索不到：允许 App 访问本地网络，并检查路由器是否开启了访客隔离。',
+                  style: const TextStyle(color: muted, fontSize: 12),
                 ),
               ],
             ),

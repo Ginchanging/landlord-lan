@@ -241,8 +241,8 @@ class HomeScreen extends StatelessWidget {
                                 children: [
                                   Pill('三人真人对局', icon: Icons.groups_outlined),
                                   Pill(
-                                    'iOS × Android',
-                                    icon: Icons.phone_iphone_rounded,
+                                    'Windows · iOS · Android',
+                                    icon: Icons.devices_rounded,
                                   ),
                                 ],
                               ),

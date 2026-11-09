@@ -46,7 +46,9 @@ class RoomDiscovery extends ChangeNotifier {
       discovery.addListener(_update);
       _update();
     } catch (_) {
-      error = '自动发现暂不可用。请允许本地网络访问，或输入房主的 IP 和端口。';
+      error = Platform.isWindows
+          ? '自动发现暂不可用。请检查防火墙的专用网络权限，或输入房主的 IP 和端口。'
+          : '自动发现暂不可用。请允许本地网络访问，或输入房主的 IP 和端口。';
     } finally {
       scanning = false;
       if (!_disposed) notifyListeners();
